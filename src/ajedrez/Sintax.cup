@@ -1,0 +1,258 @@
+package laboratorio2;
+import java_cup.runtime.*;
+
+
+
+parser code
+{:
+    private Symbol s; 
+
+    @Override
+    public void syntax_error(Symbol s) {
+        this.s = s; 
+    }
+
+    @Override
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception {
+         syntax_error(s); // reutilizar el método para configurar el símbolo de error
+        String errorMsg = "Error de sintaxis no recuperable en línea " + (s.left + 1) + ", columna " + (s.right + 1) + ": " + s.value;
+        throw new Exception(errorMsg);
+    }
+    
+    public Symbol getS(){   
+        return this.s; 
+    }
+
+:};
+
+action code
+{:
+    private Tablero tablero = new Tablero();
+
+   public boolean realizarMov(String movimiento){
+       if(tablero.realizarMovimiento(movimiento)==false){
+            return false;
+        }
+        return true;
+    }
+
+    public String pieza;
+    public String destino;
+
+ 
+:};
+
+
+terminal String  COLUMNA, FILA, PEON, DAMA, REY, TORRE, ALFIL, CABALLO, PROMOCION, ENROQUE_CORTO, ENROQUE_LARGO, CAPTURA, JAQUE, JAQUE_MATE, COMMENT_BUENA, COMMENT_MALA, COMMENT_MUY_BUENA, COMMENT_MUY_MALA, COMMENT_INTERESANTE, COMMENT_DUDOSA, COMMENT_IGUALDAD, COMMENT_LIG_VENTAJA_BLANCA, COMMENT_LIG_VENTAJA_NEGRA, COMMENT_VENTAJA_BLANCA, COMMENT_VENTAJA_NEGRA, COMMENT_VENTAJA_DECISIVA_BLANCA, COMMENT_VENTAJA_DECISIVA_NEGRA, COMMENT_INCERTIDUMBRE, COMMENT_COMPENSADO, N;
+
+non terminal partida, jugada, movimiento, comentario, pieza, destino, promocion, enroque_largo, enroque_corto, captura, jaque, jaque_mate;
+
+start with partida;
+
+partida ::=   jugada 
+           |  partida  jugada;
+
+jugada ::=   movimiento movimiento
+           |  movimiento comentario movimiento
+           |  movimiento movimiento comentario
+           |  movimiento comentario movimiento comentario
+           |  movimiento jaque movimiento jaque
+           |  movimiento  jaque   movimiento  {:
+                                    tablero.jaqueBlancas = true;
+                               :}
+                                
+           |  movimiento movimiento jaque
+                                {:  
+                                if(tablero.verificarJaque(false)== true){
+                                    System.out.println("Está en Jaque");
+                                }else{
+                                   throw new Exception("Jaque invalido en la linea " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-1)).left + 1) + ", columna " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-0)).right ));
+                                }
+                                
+                                :}
+           |  movimiento jaque_mate {:
+                            
+                                if(tablero.verificarJaqueMate(true)== true){
+                                    System.out.println("Está en Jaque Mate");
+                                }else{
+                                   throw new Exception("Jaque Mate invalido en la linea " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-1)).left + 1) + ", columna " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-0)).right + 1));
+                                }
+                            
+                               :} 
+           |  movimiento movimiento jaque_mate
+                               {:
+                            
+                                if(tablero.verificarJaqueMate(false)== true){
+                                    System.out.println("Está en Jaque Mate");
+                                }else{
+                                    throw new Exception("Jaque Mate invalido en la linea " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-1)).left + 1) + ", columna " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-0)).right + 1));
+                                }
+                            
+                               :};
+
+movimiento ::= pieza destino 
+                {: 
+                   tablero.esCaptura = false;
+                   tablero.esPromocion = false;
+                    if (realizarMov(pieza + destino) == false) {
+                        throw new Exception("Movimiento invalido en la linea " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-1)).left + 1) + ", columna " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-0)).right + 1));
+                    } else{
+                        System.out.println("Movimiento valido en la linea "); 
+                    }
+                    // Reiniciar pieza y destino
+                    pieza = "";
+                    destino = "";
+                :}
+            | pieza COLUMNA:col destino 
+                {: 
+                    tablero.esCaptura = false;
+                   tablero.esPromocion = false;
+                    if (tablero.realizarMovimientoAmbiguo(pieza + col + destino) == false) {
+                        throw new Exception("Movimiento invalido en la linea " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-1)).left + 1) + ", columna " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-0)).right + 1));
+                    } else{
+                        System.out.println("Movimiento valido en la linea "); 
+                    }
+                    // Reiniciar pieza y destino
+                    pieza = "";
+                    destino = "";
+                :}
+            | pieza FILA:fil destino 
+                {: 
+                    tablero.esCaptura = false;
+                   tablero.esPromocion = false;
+                    if (tablero.realizarMovimientoAmbiguo(pieza + fil + destino) == false) {
+                       throw new Exception("Captura invalida en la linea " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-1)).left + 1) + ", columna " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-0)).right + 1));
+                    } else{
+                        System.out.println("Movimiento valido en la linea "); 
+                    }
+                    // Reiniciar pieza y destino
+                    pieza = "";
+                    destino = "";
+                :}
+            | pieza destino promocion 
+                {: 
+                    tablero.esCaptura = false;
+                    tablero.esPromocion = true;
+                    if (realizarMov(pieza + destino) == false) {
+                        throw new Exception("Captura invalida en la linea " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-1)).left + 1) + ", columna " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-0)).right + 1));
+                    } else{
+                        System.out.println("Movimiento valido en la linea "); 
+                    }
+                    // Reiniciar pieza y destino
+                    pieza = "";
+                    destino = "";
+                :}
+            | enroque_corto 
+                {: 
+                    tablero.movimientos = tablero.movimientos +1;
+                    boolean turnoBlanco;
+                    if(tablero.movimientos % 2==0){
+                        turnoBlanco = false;
+                     }else{
+                         turnoBlanco = true;
+                     }
+                    System.out.println(tablero.movimientos);
+                    tablero.esCaptura = false;
+                    
+                    if (tablero.enroqueCorto(turnoBlanco) == false) {
+                       throw new Exception("Enroque corto invalido en la linea " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-1)).left + 1) + ", columna " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-0)).right + 1));
+                    } else{
+                        System.out.println("Enroque corto valido en la linea "); 
+                    }
+                :}
+            | enroque_largo 
+                {: 
+                    tablero.movimientos = tablero.movimientos +1;
+                    boolean turnoBlanco;
+                    if(tablero.movimientos % 2==0){
+                        turnoBlanco = false;
+                     }else{
+                         turnoBlanco = true;
+                     }
+                     System.out.println(tablero.movimientos);
+                    tablero.esCaptura = false;
+                    
+                    if (tablero.enroqueLargo(turnoBlanco) == false) {
+                       throw new Exception("Enroque invalido en la linea " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-1)).left + 1) + ", columna " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-0)).right + 1));
+                    } else{
+                        System.out.println("Enroque largo valido en la linea "); 
+                    }
+                :}
+            | pieza captura 
+                {: 
+                   tablero.esCaptura = true;
+                   tablero.esPromocion = false;
+                   if (realizarMov(pieza + destino) == false) {
+                        throw new Exception("Movimiento invalido en la linea " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-1)).left + 1) + ", columna " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-0)).right + 1));
+                    } else{
+                        System.out.println("Movimiento valido en la linea "); 
+                    }
+                    // Reiniciar pieza y destino
+                    pieza = "";
+                    destino = "";
+                :}
+| pieza FILA:fil captura 
+                {: 
+                    tablero.esCaptura = true;
+                   tablero.esPromocion = false;
+
+                    if (tablero.realizarMovimientoAmbiguo(pieza + fil + destino) == false) {
+                       throw new Exception("Captura invalida en la linea " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-1)).left + 1) + ", columna " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-0)).right + 1));
+                    } else{
+                        System.out.println("Movimiento valido en la linea "); 
+                    }
+                    // Reiniciar pieza y destino
+                    pieza = "";
+                    destino = "";
+                :}
+| pieza COLUMNA:col captura 
+                {: 
+                   tablero.esCaptura = true;
+                   tablero.esPromocion = false;
+
+                    if (tablero.realizarMovimientoAmbiguo(pieza + col + destino) == false) {
+                       throw new Exception("Captura desambiguacion invalida en la linea " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-1)).left + 1) + ", columna " + (((java_cup.runtime.Symbol)CUP$Sintax$stack.elementAt(CUP$Sintax$top-0)).right + 1));
+                    } else{
+                        System.out.println("Movimiento valido en la linea "); 
+                    }
+                    // Reiniciar pieza y destino
+                    pieza = "";
+                    destino = "";
+                :};
+
+destino ::=  COLUMNA:c FILA:f {: destino = c + f;:};
+
+pieza ::= PEON {:  pieza = "P"; :} 
+          | DAMA {: pieza = "D";:} 
+          | REY {: pieza = "R";:} 
+          | TORRE {: pieza = "T";:} 
+          | ALFIL {: pieza = "A";:} 
+          | CABALLO{:pieza = "C"; :}; 
+
+promocion ::=  PROMOCION;
+
+enroque_largo ::= ENROQUE_LARGO;
+
+enroque_corto ::= ENROQUE_CORTO;
+
+captura ::= CAPTURA  destino ;
+
+jaque ::= JAQUE;
+
+jaque_mate ::= JAQUE_MATE;
+
+comentario ::= COMMENT_BUENA
+              | COMMENT_MALA
+              | COMMENT_MUY_BUENA
+              | COMMENT_MUY_MALA
+              | COMMENT_INTERESANTE
+              | COMMENT_DUDOSA
+              | COMMENT_IGUALDAD
+              | COMMENT_LIG_VENTAJA_BLANCA
+              | COMMENT_LIG_VENTAJA_NEGRA
+              | COMMENT_VENTAJA_BLANCA
+              | COMMENT_VENTAJA_NEGRA
+              | COMMENT_VENTAJA_DECISIVA_BLANCA
+              | COMMENT_VENTAJA_DECISIVA_NEGRA
+              | COMMENT_INCERTIDUMBRE
+              | COMMENT_COMPENSADO;
