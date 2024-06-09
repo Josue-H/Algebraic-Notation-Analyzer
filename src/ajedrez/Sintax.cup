@@ -1,4 +1,4 @@
-package laboratorio2;
+package ajedrez;
 import java_cup.runtime.*;
 
 
@@ -129,7 +129,7 @@ movimiento ::= pieza destino
                     pieza = "";
                     destino = "";
                 :}
-            | pieza destino promocion 
+           | pieza destino promocion 
                 {: 
                     tablero.esCaptura = false;
                     tablero.esPromocion = true;
@@ -141,7 +141,7 @@ movimiento ::= pieza destino
                     // Reiniciar pieza y destino
                     pieza = "";
                     destino = "";
-                :}
+                :} 
             | enroque_corto 
                 {: 
                     tablero.movimientos = tablero.movimientos +1;

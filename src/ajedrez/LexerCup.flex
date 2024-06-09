@@ -1,5 +1,5 @@
-package laboratorio2;
-import java_cup.runtime.Symbol;; 
+package ajedrez;
+import java_cup.runtime.Symbol; 
 import java.io.*;
 
 %%
@@ -34,7 +34,7 @@ espacio=[ ,\t,\r,\n]+
 %%
 
 {espacio} {/*Ignore*/}
-({COLUMNAS}) { return new Symbol( sym.COLUMNA, yyline, yychar, yytext());} 
+({COLUMNAS}) { return new Symbol( sym.COLUMNA, yyline, yychar, yytext());}
 ({FILAS}) { return new Symbol( sym.FILA, yyline, yychar, yytext());} 
 P   { return new Symbol( sym.PEON, yyline, yychar, yytext());} 
 D  { return new Symbol( sym.DAMA, yyline, yychar, yytext());  }

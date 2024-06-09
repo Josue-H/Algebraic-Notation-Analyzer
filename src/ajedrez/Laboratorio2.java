@@ -16,15 +16,15 @@ import java.nio.file.Paths;
  * @author HP
  */
 public class Laboratorio2 {
-
+  
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
-        String ruta1 = "A:\\HP\\Septimo Semestre\\Compiladores\\Documentos\\Laboratorio2\\Laboratorio2\\src\\laboratorio2\\Lexer.flex";
-        String ruta2 = "A:\\HP\\Septimo Semestre\\Compiladores\\Documentos\\Laboratorio2\\Laboratorio2\\src\\laboratorio2\\LexerCup.flex";
-        String[]  rutaS = {"-parser", "Sintax", "A:\\HP\\Septimo Semestre\\Compiladores\\Documentos\\Laboratorio2\\Laboratorio2\\src\\laboratorio2\\Sintax.cup"};
+        String ruta1 = "A:\\HP\\Septimo Semestre\\Compiladores\\Documentos\\Ajedrez\\Ajedrez\\src\\ajedrez\\Lexer.flex";
+        String ruta2 = "A:\\HP\\Septimo Semestre\\Compiladores\\Documentos\\Ajedrez\\Ajedrez\\src\\ajedrez\\LexerCup.flex";
+        String[]  rutaS = {"-parser", "Sintax", "A:\\HP\\Septimo Semestre\\Compiladores\\Documentos\\Ajedrez\\Ajedrez\\src\\ajedrez\\Sintax.cup"};
         generar(ruta1, ruta2, rutaS);
     }
     
@@ -37,23 +37,23 @@ public class Laboratorio2 {
         java_cup.Main.main(rutaS);
         
         
-        Path rutaSym = Paths.get("A:\\HP\\Septimo Semestre\\Compiladores\\Documentos\\Laboratorio2\\Laboratorio2\\src\\laboratorio2\\sym.java");
+        Path rutaSym = Paths.get("A:\\HP\\Septimo Semestre\\Compiladores\\Documentos\\Ajedrez\\Ajedrez\\src\\ajedrez\\sym.java");
         if(Files.exists(rutaSym)){
             Files.delete(rutaSym);
         }
         Files.move(
-                Paths.get("A:\\HP\\Septimo Semestre\\Compiladores\\Documentos\\Laboratorio2\\Laboratorio2\\sym.java"),
-                Paths.get("A:\\HP\\Septimo Semestre\\Compiladores\\Documentos\\Laboratorio2\\Laboratorio2\\src\\laboratorio2\\sym.java")
+                Paths.get("A:\\HP\\Septimo Semestre\\Compiladores\\Documentos\\Ajedrez\\Ajedrez\\sym.java"),
+                Paths.get("A:\\HP\\Septimo Semestre\\Compiladores\\Documentos\\Ajedrez\\Ajedrez\\src\\Ajedrez\\sym.java")
         );
         
         
-        Path rutaSin = Paths.get("A:\\HP\\Septimo Semestre\\Compiladores\\Documentos\\Laboratorio2\\Laboratorio2\\src\\laboratorio2\\Sintax.java");
+        Path rutaSin = Paths.get("A:\\HP\\Septimo Semestre\\Compiladores\\Documentos\\Ajedrez\\Ajedrez\\src\\ajedrez\\Sintax.java");
         if(Files.exists(rutaSin)){
             Files.delete(rutaSin);
         }        
         Files.move(
-            Paths.get("A:\\HP\\Septimo Semestre\\Compiladores\\Documentos\\Laboratorio2\\Laboratorio2\\Sintax.java"),
-            Paths.get("A:\\HP\\Septimo Semestre\\Compiladores\\Documentos\\Laboratorio2\\Laboratorio2\\src\\laboratorio2\\Sintax.java")
+            Paths.get("A:\\HP\\Septimo Semestre\\Compiladores\\Documentos\\Ajedrez\\Ajedrez\\Sintax.java"),
+            Paths.get("A:\\HP\\Septimo Semestre\\Compiladores\\Documentos\\Ajedrez\\Ajedrez\\src\\ajedrez\\Sintax.java")
         );
     }
     

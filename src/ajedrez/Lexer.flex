@@ -1,5 +1,5 @@
-package laboratorio2;
-import static laboratorio2.Token.*; 
+package ajedrez;
+import static ajedrez.Token.*; 
 import java.io.*;
 
 %%
@@ -11,7 +11,7 @@ import java.io.*;
 
 
 // Definición de caracteres
-COLUMNA = [a-h]
+COLUMNA = [a-h]548
 FILA = [1-8]
 SALTO = [\n]
 E = [ ,\t,\n,\r]+
